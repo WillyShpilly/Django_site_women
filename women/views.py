@@ -1,7 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 
+from models import Women, Category, TagPost
+
 # Create your views here.
+
 
 data_db = [
     {'id': 1, 'title': 'Анджелина Джоли', 'content': '''<h1>Анджелина Джоли</h1> (англ. Angelina Jolie[7], при рождении Войт (англ. Voight), ранее Джоли Питт (англ. Jolie Pitt); род. 4 июня 1975, Лос-Анджелес, Калифорния, США) — американская актриса кино, телевидения и озвучивания, кинорежиссёр, сценаристка, продюсер, фотомодель, посол доброй воли ООН.
@@ -20,10 +23,12 @@ menu = [{'title': "О сайте", 'url_name': 'about'},
 
 
 def index(request):
+    posts = Women.published.all()
     data = {
         "title": "Главная страница",
         "menu": menu,
-        "posts": data_db
+        "posts": posts,
+        "cat_selected": 0
     }
     return render(request, "women/index.html", context = data)
 
@@ -44,7 +49,40 @@ def login(request):
     return HttpResponse("Авторизация")
 
 
-def show_post(request, post_id):
-    return HttpResponse(f"Отображение статьи с id = {post_id}")
+def show_post(request, post_slug):
+    post = get_object_or_404(Women, pk=post_slug)
+
+    data = {
+        "title": post.title,
+        "menu": menu,
+        "post": post,
+        "cat_selected": 1,
+    }
+    return render(request, "women/post.html", context=data)
 
 
+def show_category(request, cat_slug):
+    category = get_object_or_404(Category, slug=cat_slug)
+    posts = Women.published.filter(cat_id=category.pk)
+    
+    data = {
+        "title": f"Рубрика: {category.name}",
+        "menu": menu,
+        "posts": posts,
+        "cat_selected": category.pk,
+    }
+    return render(request, "women/index.html", context=data)
+
+
+def show_tag_postlist(request, tag_slug):
+    tag = get_object_or_404(TagPost, slug = tag_slug)
+    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED)
+
+    data = {
+        "title": f"Тег: {tag:tag}",
+        "menu": menu,
+        "posts": posts,
+        "cat_selected": None,
+    }
+
+    return render(request, "women/index.html", context=data)
