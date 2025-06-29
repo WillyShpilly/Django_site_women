@@ -26,3 +26,5 @@ urlpatterns = [
 ]
 
 
+admin.site.site_header = "Центр управления"
+admin.site.index_title = "Известные женщины мира"
