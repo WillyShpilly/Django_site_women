@@ -1,7 +1,8 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 
 from .models import Women, Category, TagPost
+from .forms import AddPostForm
 
 # Create your views here.
 
@@ -29,7 +30,24 @@ def about(request):
 
 
 def addpage(request):
-    return HttpResponse("Добавление статьи")
+    if request.method == "POST":
+        form = AddPostForm(request.POST)
+        if form.is_valid():
+            # print(form.cleaned_data)
+            try:
+                Women.objects.create(**form.changed_data)
+                return redirect("home")
+            except:
+                form.add_error(None, "Ошибка добавления поста")    
+    else:        
+        form = AddPostForm()
+    
+    data = {
+        "menu": menu, 
+        "title": "Добавление статьи",
+        "form": form
+    }
+    return render(request, "women/addpage.html", context = data)
 
 
 def contact(request):
