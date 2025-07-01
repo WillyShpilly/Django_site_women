@@ -16,7 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from django.conf.urls.static import static
+from . import settings
 
 
 
@@ -25,6 +26,8 @@ urlpatterns = [
     path('women/', include('women.urls')),
 ]
 
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 admin.site.site_header = "Центр управления"
 admin.site.index_title = "Известные женщины мира"

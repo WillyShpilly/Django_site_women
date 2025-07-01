@@ -1,6 +1,7 @@
 from django.contrib import admin, messages
 from .models import Women, Category
 from django.db.models.functions import Length
+from django.utils.safestring import mark_safe
 
 # Register your models here.
 
@@ -24,9 +25,9 @@ class MarriedFileter(admin.SimpleListFilter):
 
 @admin.register(Women)
 class WomenAdmin(admin.ModelAdmin):
-    fields = ("title", "content", "slug", "cat", "husband", "tags")
-    readonly_fields = ("slug", )
-    list_display = ("id", "title", "time_create", "is_published", "cat")
+    fields = ("title", "content", "slug", "photo", "post_photo", "cat", "husband", "tags")
+    readonly_fields = ("slug", "post_photo")
+    list_display = ("id", "post_photo", "title", "time_create", "is_published", "cat")
     list_display_links = ("id", "title")
     ordering = ("-time_create", 'title')
     list_editable = ("is_published",)
@@ -35,10 +36,13 @@ class WomenAdmin(admin.ModelAdmin):
     search_fields = ("title", "cat__name")
     list_filter = (MarriedFileter, "cat__name", "is_published")
     filter_horizontal = ("tags", )
+    save_on_top = True
 
-    @admin.display(description="Краткое описание", ordering=Length("content"))
-    def brief_info(self, women: Women):
-        return f"Описание: {len(women.content)} символов"
+    @admin.display(description="Изоображение", ordering="content")
+    def post_photo(self, women: Women):
+        if women.photo:
+            return mark_safe(f"<img src='{women.photo.url}' width=50>")
+        return "Без фото"
     
     @admin.action(description="Опубликовать выбранные записи")
     def set_published(self, request, queryset):

@@ -13,11 +13,11 @@ class Category(models.Model):
         verbose_name_plural = "Категории"
 
     def __str__(self):
-        return self.title
-    
+        return self.name  
+
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            self.slug = slugify(self.name)  
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -36,6 +36,7 @@ class Women(models.Model):
     
     title = models.CharField(max_length=255, verbose_name="Заголовок")
     content = models.TextField(blank=True, verbose_name="Текст статьи")
+    photo = models.ImageField(upload_to="photos/%Y/%m/%d/", default=None, blank=True, null=True, verbose_name="Фото")
     time_create = models.DateTimeField(auto_now_add=True, verbose_name="Время создания")
     time_update = models.DateTimeField(auto_now=True, verbose_name="Время изменения")
     is_published = models.IntegerField(choices=Status, default=Status.DRAFT, verbose_name="Статус")
@@ -92,3 +93,5 @@ class Husband(models.Model):
 
     def __str__(self):
         return self.name
+    
+ 
