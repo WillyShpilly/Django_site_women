@@ -1,13 +1,15 @@
 from django.urls import path
-from women.views import index, about, show_post, addpage, contact, login, show_category, show_tag_postlist
+from women.views import WomenHome, about, ShowPost, contact, login, WomenCategory, WomenTagView, AddPage, UpdatePage, DeletePage
 
 urlpatterns = [
-    path('', index, name="home"),
+    path('', WomenHome.as_view(), name="home"),
     path('about/', about, name="about"),
-    path('addpage/', addpage, name="add_page"),
+    path('addpage/', AddPage.as_view(), name="add_page"),
     path('contact/', contact, name="contact"),
     path('login/', login, name="login"),
-    path('post/<slug:post_slug>/', show_post, name="post"),
-    path('category/<slug:cat_slug>/', show_category, name="category"),
-    path('tag/<slug:tag_slug>/', show_tag_postlist, name="tag"),
+    path('post/<slug:post_slug>/', ShowPost.as_view(), name="post"),
+    path('category/<slug:cat_slug>/', WomenCategory.as_view(), name="category"),
+    path('tag/<slug:tag_slug>/', WomenTagView.as_view(), name="tag"),
+    path("edit/<slug:slug>/", UpdatePage.as_view(), name="edit_page"),
+    path('delete/<slug:slug>/', DeletePage.as_view(), name='delete_page'),
 ]
