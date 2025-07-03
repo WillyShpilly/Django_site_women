@@ -24,6 +24,7 @@ from . import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('women/', include('women.urls')),
+    path('users/', include('users.urls', namespace="users")),
 ]
 
 if settings.DEBUG:
